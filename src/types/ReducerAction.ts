@@ -31,11 +31,34 @@ interface ItemAction extends WithPayload<Item | null> {
 interface AddCommanderToArmyAction extends WithPayloadWithIndex<Commander> {
   type: "addCommander";
 }
+interface RemoveCommanderFromArmyAction extends WithPayloadWithIndex<number> {
+  type: "removeCommander";
+}
+interface AdjustCommanderPostionUp extends WithPayloadWithIndex<number> {
+  type: "adjustCommanderPositionUp";
+}
+interface AdjustCommanderPostionDown extends WithPayloadWithIndex<number> {
+  type: "adjustCommanderPositionDown";
+}
+interface CopyCommanderPosition
+  extends WithPayloadWithIndex<{ cmdr: Commander; cmdrIndex: number }> {
+  type: "copyCommander";
+}
+interface UpdateCommander
+  extends WithPayloadWithIndex<{ cmdr: Commander; cmdrIndex: number }> {
+  type: "updateCommander";
+}
+
 type ReducerAction =
   | NationAction
   | ResearchAction
   | UnitAction
   | ItemAction
-  | AddCommanderToArmyAction;
+  | AddCommanderToArmyAction
+  | RemoveCommanderFromArmyAction
+  | AdjustCommanderPostionDown
+  | AdjustCommanderPostionUp
+  | CopyCommanderPosition
+  | UpdateCommander;
 
 export default ReducerAction;

@@ -1,3 +1,5 @@
+import { Item } from "./Item";
+
 interface Unit {
   id: string;
   name: string;
@@ -82,18 +84,30 @@ type CommanderEquipment = {
         | typeof unitMiscConst[number]
       )
     | "body"
-    | "feet"]?: string;
+    | "feet"]?: Item | null;
 };
 
+interface Squad {
+  unit: Unit;
+  quantity: number;
+}
+
 interface Commander extends Unit {
-  squads: Array<Array<Units>>;
+  squads: Array<Squad>;
   equipment: CommanderEquipment;
 }
 
 const unitHandsConst = ["hand1", "hand2", "hand3", "hand4"] as const;
 const unitHeadsConst = ["head1", "head2", "head3"] as const;
 const unitMiscConst = ["misc1", "misc2", "misc3", "misc4", "misc5"] as const;
+const allPossibleSlotsConst = [
+  ...unitHandsConst,
+  ...unitHeadsConst,
+  "body",
+  "feet",
+  ...unitMiscConst,
+] as const;
 
 export default Unit;
-export { unitHandsConst, unitHeadsConst, unitMiscConst };
-export type { Unit, Units, Commander, CommanderEquipment };
+export { unitHandsConst, unitHeadsConst, unitMiscConst, allPossibleSlotsConst };
+export type { Unit, Units, Commander, CommanderEquipment, Squad };

@@ -63,6 +63,66 @@ function appStateReducer(state: AppState, action: ReducerAction): AppState {
         armies: newArmies,
       };
     }
+    case "removeCommander": {
+      const { data, nationIndex } = action.payload;
+      const newArmies = [[...state.armies[0]], [...state.armies[1]]];
+      newArmies[nationIndex] = [
+        ...newArmies[nationIndex].slice(0, data),
+        ...newArmies[nationIndex].slice(data + 1),
+      ];
+      return {
+        ...state,
+        armies: newArmies,
+      };
+    }
+    case "adjustCommanderPositionDown": {
+      //Check for overflow done in handler
+      const { data, nationIndex } = action.payload;
+      const newArmies = [[...state.armies[0]], [...state.armies[1]]];
+      const temp = newArmies[nationIndex][data];
+      newArmies[nationIndex][data] = newArmies[nationIndex][data + 1];
+      newArmies[nationIndex][data + 1] = temp;
+      return {
+        ...state,
+        armies: newArmies,
+      };
+    }
+    case "adjustCommanderPositionUp": {
+      //Check for overflow done in handler
+      const { data, nationIndex } = action.payload;
+      const newArmies = [[...state.armies[0]], [...state.armies[1]]];
+      const temp = newArmies[nationIndex][data];
+      newArmies[nationIndex][data] = newArmies[nationIndex][data - 1];
+      newArmies[nationIndex][data - 1] = temp;
+      return {
+        ...state,
+        armies: newArmies,
+      };
+    }
+    case "copyCommander": {
+      const { data, nationIndex } = action.payload;
+      const { cmdr, cmdrIndex } = data;
+      const newArmies = [[...state.armies[0]], [...state.armies[1]]];
+      newArmies[nationIndex] = [
+        ...newArmies[nationIndex].slice(0, cmdrIndex),
+        cmdr,
+        ...newArmies[nationIndex].slice(cmdrIndex),
+      ];
+      return {
+        ...state,
+        armies: newArmies,
+      };
+    }
+    case "updateCommander": {
+      const { data, nationIndex } = action.payload;
+      const { cmdr, cmdrIndex } = data;
+      const newArmies = [[...state.armies[0]], [...state.armies[1]]];
+      newArmies[nationIndex][cmdrIndex] = cmdr;
+      return {
+        ...state,
+        armies: newArmies,
+      };
+    }
     default: {
       throw new Error("Error in AppStateReducer with invalid action type call");
     }
@@ -186,16 +246,83 @@ function App() {
       type: "chooseItem",
     });
   }
-  function addCommanderToArmy(
-    commander: Commander,
+  function addCommanderToArmy(cmdr: Commander, nationIndex: NationIndex): void {
+    dispatch({
+      payload: {
+        data: cmdr,
+        nationIndex,
+      },
+      type: "addCommander",
+    });
+  }
+  function removeCommanderFromArmy(
+    cmdrIndex: number,
     nationIndex: NationIndex
   ): void {
     dispatch({
       payload: {
-        data: commander,
+        data: cmdrIndex,
         nationIndex,
       },
-      type: "addCommander",
+      type: "removeCommander",
+    });
+  }
+  function shiftCommanderPosition(
+    cmdrIdx: number,
+    nationIndex: NationIndex,
+    direction: "up" | "down"
+  ): void {
+    if (direction === "up" && cmdrIdx !== 0) {
+      dispatch({
+        payload: {
+          data: cmdrIdx,
+          nationIndex,
+        },
+        type: "adjustCommanderPositionUp",
+      });
+    } else if (
+      direction === "down" &&
+      cmdrIdx !== state.armies[nationIndex].length - 1
+    ) {
+      dispatch({
+        payload: {
+          data: cmdrIdx,
+          nationIndex,
+        },
+        type: "adjustCommanderPositionDown",
+      });
+    }
+  }
+  function copyCommander(
+    cmdr: Commander,
+    cmdrIndex: number,
+    nationIndex: NationIndex
+  ): void {
+    dispatch({
+      type: "copyCommander",
+      payload: {
+        data: {
+          cmdr,
+          cmdrIndex,
+        },
+        nationIndex: nationIndex,
+      },
+    });
+  }
+  function updateCommander(
+    cmdr: Commander,
+    cmdrIndex: number,
+    nationIndex: NationIndex
+  ): void {
+    dispatch({
+      type: "updateCommander",
+      payload: {
+        data: {
+          cmdr,
+          cmdrIndex,
+        },
+        nationIndex,
+      },
     });
   }
 
@@ -229,6 +356,10 @@ function App() {
         chosenUnit={state.chosenUnit}
         nations={state.nations}
         handleAddCommander={addCommanderToArmy}
+        handleRemoveCommander={removeCommanderFromArmy}
+        handleShiftCommanderPos={shiftCommanderPosition}
+        handleCopyCommander={copyCommander}
+        handleUpdateCommander={updateCommander}
       />
     </main>
   );

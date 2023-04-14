@@ -9,6 +9,8 @@ import {
   unitMiscConst,
 } from "../types/Unit";
 import { Nation, NationIndex } from "../types/Nation";
+import CommanderDisplay from "./CommanderDisplay";
+import addSVG from "../images/add.svg";
 
 type Props = {
   nations: [Nation | null, Nation | null];
@@ -16,6 +18,22 @@ type Props = {
   chosenItem: Item | null;
   armies: Array<Array<Commander>>;
   handleAddCommander: (commander: Commander, nationIndex: NationIndex) => void;
+  handleRemoveCommander: (cmdrIndex: number, nationIndex: NationIndex) => void;
+  handleCopyCommander: (
+    cmdr: Commander,
+    cmdrIndex: number,
+    nationIndex: NationIndex
+  ) => void;
+  handleShiftCommanderPos: (
+    cmdrIdx: number,
+    nationIndex: NationIndex,
+    direction: "up" | "down"
+  ) => void;
+  handleUpdateCommander: (
+    cmdr: Commander,
+    cmdrIndex: number,
+    nationIndex: NationIndex
+  ) => void;
 };
 
 function ArmyBuilder({
@@ -24,57 +42,52 @@ function ArmyBuilder({
   chosenUnit,
   chosenItem,
   handleAddCommander,
+  handleRemoveCommander,
+  handleShiftCommanderPos,
+  handleCopyCommander,
+  handleUpdateCommander,
 }: Props) {
   return (
     <section className="p-3 border-l-2 border-white flex-1 max-w-3xl">
       <h1 className="text-2xl font-bold">Army Builder: </h1>
       <div className="flex flex-row gap-2">
         {nations.map((nation, idx) => (
-          <div className="flex-1">
+          <div key={idx} className="flex-1">
             <div className="flex flex-row justify-between">
               <h2 className="text-xl underline underline-offset-2">
                 {nation ? nation.name : `Nation ${idx + 1}`}
               </h2>
               {chosenUnit ? (
                 <button
-                  className="bg-green-900 p-1 rounded-lg mr-2"
+                  className="h-5 w-5 mr-2"
+                  style={{
+                    backgroundImage: `url(${addSVG})`,
+                    backgroundSize: "contain",
+                  }}
                   onClick={(e) => {
                     handleAddCommander(
                       convertUnitToCommander(chosenUnit),
                       idx as NationIndex
                     );
                   }}
-                >
-                  + Cmdr
-                </button>
+                ></button>
               ) : undefined}
             </div>
             {armies[idx as NationIndex].length > 0 ? (
               <ul className="pl-1 flex flex-col gap-2">
-                {armies[idx].map((cmdr) => (
-                  <li className="even:bg-slate-700 odd:bg-neutral-700 p-1 rounded-lg">
-                    <h2 className="font-bold">{cmdr.name}</h2>
-                    <ul className="pl-1 text-xs flex flex-col gap-1">
-                      {Object.keys(cmdr.equipment).map((equipmentKey) => (
-                        <li className="flex flex-row">
-                          <button className="w-full bg-green-900 flex flex-row justify-between">
-                            <span className="inline-blockflex-1 ml-2">
-                              {equipmentKey}
-                            </span>
-                            <span className="mr-2">
-                              {cmdr.equipment[
-                                equipmentKey as keyof CommanderEquipment
-                              ] === ""
-                                ? "-"
-                                : cmdr.equipment[
-                                    equipmentKey as keyof CommanderEquipment
-                                  ]}
-                            </span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
+                {armies[idx].map((cmdr, i) => (
+                  <CommanderDisplay
+                    key={i}
+                    cmdr={cmdr}
+                    cmdrIdx={i}
+                    nationIdx={idx as NationIndex}
+                    handleRemoveCommander={handleRemoveCommander}
+                    handleShiftCommanderPos={handleShiftCommanderPos}
+                    handleCopyCommander={handleCopyCommander}
+                    chosenItem={chosenItem}
+                    chosenUnit={chosenUnit}
+                    handleUpdateCommander={handleUpdateCommander}
+                  />
                 ))}
               </ul>
             ) : (
@@ -95,19 +108,19 @@ function convertUnitToCommander(unit: Unit): Commander {
   const numFeet = unit.foot !== "" ? parseInt(unit.foot) : 0;
   const numMisc = unit.misc !== "" ? parseInt(unit.misc) : 0;
   for (let i = 0; i < numHands; i++) {
-    equipment[unitHandsConst[i]] = "";
+    equipment[unitHandsConst[i]] = null;
   }
   for (let i = 0; i < numHeads; i++) {
-    equipment[unitHeadsConst[i]] = "";
+    equipment[unitHeadsConst[i]] = null;
   }
   for (let i = 0; i < numMisc; i++) {
-    equipment[unitMiscConst[i]] = "";
+    equipment[unitMiscConst[i]] = null;
   }
   if (numBody > 0) {
-    equipment.body = "";
+    equipment.body = null;
   }
   if (numFeet > 0) {
-    equipment.feet = "";
+    equipment.feet = null;
   }
   return {
     ...unit,
@@ -115,64 +128,5 @@ function convertUnitToCommander(unit: Unit): Commander {
     equipment,
   };
 }
-function itemMatchesEquipmentSlot(
-  item: Item,
-  equipmentSlot: keyof CommanderEquipment
-): boolean {
-  switch (item.type) {
-    case "1-h wpn": {
-      return (
-        equipmentSlot === "hand1" ||
-        equipmentSlot === "hand2" ||
-        equipmentSlot === "hand3" ||
-        equipmentSlot === "hand4"
-      );
-    }
-    case "2-h wpn": {
-      return (
-        equipmentSlot === "hand1" ||
-        equipmentSlot === "hand2" ||
-        equipmentSlot === "hand3" ||
-        equipmentSlot === "hand4"
-      );
-    }
-    case "armor": {
-      return equipmentSlot === "body";
-    }
-    case "boots": {
-      return equipmentSlot === "feet";
-    }
-    case "crown": {
-      return (
-        equipmentSlot === "head1" ||
-        equipmentSlot === "head2" ||
-        equipmentSlot === "head3"
-      );
-    }
-    case "helm": {
-      return (
-        equipmentSlot === "head1" ||
-        equipmentSlot === "head2" ||
-        equipmentSlot === "head3"
-      );
-    }
-    case "misc": {
-      return (
-        equipmentSlot === "misc1" ||
-        equipmentSlot === "misc2" ||
-        equipmentSlot === "misc3" ||
-        equipmentSlot === "misc4" ||
-        equipmentSlot === "misc5"
-      );
-    }
-    case "shield": {
-      return (
-        equipmentSlot === "hand1" ||
-        equipmentSlot === "hand2" ||
-        equipmentSlot === "hand3" ||
-        equipmentSlot === "hand4"
-      );
-    }
-  }
-}
+
 export default ArmyBuilder;

@@ -60,7 +60,7 @@ function UnitPicker({ units, chosenUnit, handleChooseUnit }: Props) {
           {filteredUnits.length > 0 ? (
             <ol className="px-3 flex flex-col">
               {filteredUnits
-                .slice(0, filteredUnits.length > 10 ? 10 : filteredUnits.length)
+                .slice(0, filteredUnits.length > 50 ? 50 : filteredUnits.length)
                 .map((unit) => {
                   return (
                     <li key={unit.id} className="flex flex-row w-full relative">

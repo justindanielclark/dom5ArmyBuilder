@@ -24,6 +24,7 @@ function ItemPicker({ items, handleChooseItem, chosenItem }: Props) {
             className="px-2 h-8 bg-white text-black"
             onChange={(e) => {
               setSearch(e.target.value);
+              handleChooseItem(null);
             }}
           />
           <button
