@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+		"test": "jest"
   },
   "dependencies": {
     "csv-parser": "^3.0.0",
@@ -16,14 +17,23 @@
   },
   "devDependencies": {
     "@rollup/plugin-dsv": "^3.0.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
     "@types/d3": "^7.4.0",
-    "@types/react": "^18.0.28",
+    "@types/jest": "^29.5.0",
+    "@types/react": "^18.0.35",
     "@types/react-csv": "^1.1.3",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.14",
+    "babel-jest": "^29.5.0",
+    "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.3.1",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.3",
     "vite": "^4.2.0"
   }

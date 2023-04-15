@@ -1,6 +1,8 @@
 import { Nation, NationIndex, NationsByEra } from "../types/Nation";
-import * as d3 from "d3";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
+import upSVG from "../images/up.svg";
+import downSVG from "../images/down.svg";
+import { Displaying } from "../App";
 
 type Props = {
   nations: NationsByEra;
@@ -9,29 +11,58 @@ type Props = {
     nation: Nation | null,
     nationIndex: NationIndex
   ) => void;
+  displaying: boolean;
+  toggleDisplay: (displayKey: keyof Displaying) => void;
 };
 
-function NationPicker({ parentState, handleCheckboxClick, nations }: Props) {
+function NationPicker({
+  parentState,
+  handleCheckboxClick,
+  nations,
+  displaying,
+  toggleDisplay,
+}: Props) {
   const [chosenAge, setChosenAge] = useState<keyof NationsByEra>("EarlyAge");
   return (
-    <section className="py-3 px-5 border-r-2">
-      <h1 className="text-2xl font-bold mb-2 underline underline-offset-2">
-        Nations:
-      </h1>
-      <select
-        className="bg-stone-100 text-black p-1 text-sm rounded-lg"
-        value={chosenAge}
-        onChange={(e) => {
-          setChosenAge(e.target.value as keyof NationsByEra);
-          handleCheckboxClick(null, 0);
-          handleCheckboxClick(null, 1);
-        }}
-      >
-        <option value="EarlyAge">Early Age</option>
-        <option value="MiddleAge">Middle Age</option>
-        <option value="LateAge">Late Age</option>
-      </select>
-      {renderNationsByAge(nations, chosenAge, parentState, handleCheckboxClick)}
+    <section className="py-3 px-5 w-full">
+      <div className="flex flex-row justify-between">
+        <h1 className="text-2xl font-bold mb-2 underline underline-offset-2">
+          Nations:
+        </h1>
+        <button
+          className="w-8 h-8"
+          style={{
+            backgroundImage: `url(${displaying ? downSVG : upSVG})`,
+            backgroundSize: "cover",
+          }}
+          onClick={(e) => {
+            toggleDisplay("Nations");
+          }}
+        ></button>
+      </div>
+      {displaying ? (
+        <>
+          <select
+            className="bg-stone-100 text-black p-1 text-sm rounded-lg"
+            value={chosenAge}
+            onChange={(e) => {
+              setChosenAge(e.target.value as keyof NationsByEra);
+              handleCheckboxClick(null, 0);
+              handleCheckboxClick(null, 1);
+            }}
+          >
+            <option value="EarlyAge">Early Age</option>
+            <option value="MiddleAge">Middle Age</option>
+            <option value="LateAge">Late Age</option>
+          </select>
+          {renderNationsByAge(
+            nations,
+            chosenAge,
+            parentState,
+            handleCheckboxClick
+          )}
+        </>
+      ) : undefined}
     </section>
   );
 }

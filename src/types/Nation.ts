@@ -10,6 +10,7 @@ export type Nation = {
   file_name_base: string;
   era: string;
   end: string;
+  uwStart: string;
 };
 
 type NationsByEra = {

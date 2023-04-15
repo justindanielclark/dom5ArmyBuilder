@@ -16,6 +16,7 @@ import copySVG from "../images/copy.svg";
 import trashSVG from "../images/trash.svg";
 import upSVG from "../images/up.svg";
 import downSVG from "../images/down.svg";
+import { isNumber } from "../utils/isNumber";
 
 type Props = {
   chosenUnit: Unit | null;
@@ -168,9 +169,30 @@ function CommanderDisplay({
       }
     });
     return equipment.length > 0 ? (
-      <ul>
+      <ul className="flex flex-col">
         {equipment.map((eq) => (
-          <li key={eq.slot}>{eq.item?.name}</li>
+          <li key={eq.slot} className="text-xs flex flex-row ml-4 mb-0.5">
+            <button
+              className="w-4 h-4 cursor-pointer mr-2"
+              style={{
+                backgroundImage: `url(${trashSVG})`,
+                backgroundSize: "contain",
+              }}
+              onClick={(e) => {
+                const dupCmdr = createCommanderCopy(cmdr);
+                removeItemFromCommander(dupCmdr, eq.item as Item, eq.slot);
+                handleUpdateCommander(dupCmdr, cmdrIdx, nationIdx);
+              }}
+            ></button>
+            <span className="w-14 inline-block">
+              [
+              {isNumber(eq.slot.charAt(eq.slot.length - 1))
+                ? eq.slot.substring(0, eq.slot.length - 1)
+                : eq.slot}
+              ]:{" "}
+            </span>
+            <span className="inline-blox flex-1">{eq.item?.name}</span>
+          </li>
         ))}
       </ul>
     ) : undefined;
@@ -184,6 +206,8 @@ function CommanderDisplay({
             <li key={i} className="flex flex-row w-full h-6 items-center">
               <input
                 value={squad.quantity}
+                min={1}
+                max={1000}
                 type="number"
                 className="w-10 py-0.5 px-2 text-right bg-slate-700 focus:ring-0 focus:ring-offset-0 active:ring-0 active:ring-offset-0 border-none ring-0 outline-0 hover:bg-slate-600 active:bg-slate-600 focus:bg-slate-600"
                 onChange={(e) => {
@@ -239,29 +263,235 @@ function CommanderDisplay({
       </>
     ) : undefined;
   }
-  function addItemToCommander(cmdr: Commander, item: Item): Commander {
+  function addItemToCommander(
+    duplicate_cmdr: Commander,
+    item_to_add: Item
+  ): Commander {
     if (
-      item.type === "1-h wpn" ||
-      item.type === "2-h wpn" ||
-      item.type === "shield"
+      item_to_add.type === "1-h wpn" ||
+      item_to_add.type === "2-h wpn" ||
+      item_to_add.type === "shield"
     ) {
+      //Create an Array of existing hand items
       const commandersHandEquipment = unitHandsConst.reduce((acc, cur) => {
-        const item = cmdr.equipment[cur];
+        const item = duplicate_cmdr.equipment[cur];
         if (item !== undefined && item !== null) {
           acc.push(item);
         }
         return acc;
       }, [] as Array<Item>);
-      //! LEFT OFF HERE
-      //TODO
-      //! LEFT OFF HERE
-    } else if (item.type === "helm" || item.type === "crown") {
-    } else if (item.type === "armor") {
-    } else if (item.type === "boots") {
+      //Add Our New Item
+      commandersHandEquipment.push(item_to_add);
+      //Sort them
+      commandersHandEquipment.sort((a, b) => {
+        const aValue = calcHandItemTypeValue(a);
+        const bValue = calcHandItemTypeValue(b);
+        const result = aValue - bValue;
+        return result !== 0 ? result : a.name.localeCompare(b.name);
+      });
+      //Strip the current commander of hand items, careful to not turn undefined properties into defined ones
+      unitHandsConst.forEach((key) => {
+        const slot = duplicate_cmdr.equipment[key];
+        if (slot !== undefined) {
+          duplicate_cmdr.equipment[key] = null;
+        }
+      });
+      //Reapply the now sorted hand items
+      for (let i = 0; i < commandersHandEquipment.length; i++) {
+        duplicate_cmdr.equipment[unitHandsConst[i]] =
+          commandersHandEquipment[i];
+      }
+    } else if (item_to_add.type === "helm" || item_to_add.type === "crown") {
+      //Create an Array of existing head items
+      const commandersHeadEquipment = unitHeadsConst.reduce((acc, cur) => {
+        const item = duplicate_cmdr.equipment[cur];
+        if (item !== undefined && item !== null) {
+          acc.push(item);
+        }
+        return acc;
+      }, [] as Array<Item>);
+      //Add Our New Item
+      commandersHeadEquipment.push(item_to_add);
+      //Sort them
+      commandersHeadEquipment.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+      //Strip the current commander of head items, careful to not turn undefined properties into defined ones
+      unitHeadsConst.forEach((key) => {
+        const slot = duplicate_cmdr.equipment[key];
+        if (slot !== undefined) {
+          duplicate_cmdr.equipment[key] = null;
+        }
+      });
+      //Reapply the now sorted hand items
+      for (let i = 0; i < commandersHeadEquipment.length; i++) {
+        duplicate_cmdr.equipment[unitHeadsConst[i]] =
+          commandersHeadEquipment[i];
+      }
+    } else if (item_to_add.type === "armor") {
+      duplicate_cmdr.equipment["body"] = item_to_add;
+    } else if (item_to_add.type === "boots") {
+      duplicate_cmdr.equipment["feet"] = item_to_add;
     } else {
+      //Create an Array of existing misc items
+      const commandersMiscEquipment = unitMiscConst.reduce((acc, cur) => {
+        const item = duplicate_cmdr.equipment[cur];
+        if (item !== undefined && item !== null) {
+          acc.push(item);
+        }
+        return acc;
+      }, [] as Array<Item>);
+      //Add Our New Item
+      commandersMiscEquipment.push(item_to_add);
+      //Sort them
+      commandersMiscEquipment.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+      //Strip the current commander of misc items, careful to not turn undefined properties into defined ones and to turn otherwise defined properities into null
+      unitMiscConst.forEach((key) => {
+        const slot = duplicate_cmdr.equipment[key];
+        if (slot !== undefined) {
+          duplicate_cmdr.equipment[key] = null;
+        }
+      });
+      //Reapply the now sorted hand items
+      for (let i = 0; i < commandersMiscEquipment.length; i++) {
+        duplicate_cmdr.equipment[unitMiscConst[i]] = commandersMiscEquipment[i];
+      }
     }
-
-    return cmdr;
+    return duplicate_cmdr;
+    function calcHandItemTypeValue(item: Item) {
+      let value = 0;
+      switch (item.type) {
+        case "1-h wpn": {
+          value = 2;
+        }
+        case "2-h wpn": {
+          value = 3;
+        }
+        case "shield": {
+          value = 1;
+        }
+      }
+      return value;
+    }
+  }
+  function removeItemFromCommander(
+    duplicate_cmdr: Commander,
+    item_to_remove: Item,
+    itemSlot: typeof allPossibleSlotsConst[number]
+  ): Commander {
+    if (
+      item_to_remove.type === "1-h wpn" ||
+      item_to_remove.type === "2-h wpn" ||
+      item_to_remove.type === "shield"
+    ) {
+      //Set Our Item to Null At Its Slot
+      duplicate_cmdr.equipment[itemSlot] = null;
+      //Create an Array of remaining hand items
+      const commandersHandEquipment = unitHandsConst.reduce((acc, cur) => {
+        const item = duplicate_cmdr.equipment[cur];
+        if (item !== undefined && item !== null) {
+          acc.push(item);
+        }
+        return acc;
+      }, [] as Array<Item>);
+      //Sort them
+      commandersHandEquipment.sort((a, b) => {
+        const aValue = calcHandItemTypeValue(a);
+        const bValue = calcHandItemTypeValue(b);
+        const result = aValue - bValue;
+        return result !== 0 ? result : a.name.localeCompare(b.name);
+      });
+      //Strip the current commander of hand items, careful to not turn undefined properties into defined ones
+      unitHandsConst.forEach((key) => {
+        const slot = duplicate_cmdr.equipment[key];
+        if (slot !== undefined) {
+          duplicate_cmdr.equipment[key] = null;
+        }
+      });
+      //Reapply the now sorted hand items
+      for (let i = 0; i < commandersHandEquipment.length; i++) {
+        duplicate_cmdr.equipment[unitHandsConst[i]] =
+          commandersHandEquipment[i];
+      }
+    } else if (
+      item_to_remove.type === "helm" ||
+      item_to_remove.type === "crown"
+    ) {
+      //Set Our Item to Null At Its Slot
+      duplicate_cmdr.equipment[itemSlot] = null;
+      //Create an Array of Remaining head items
+      const commandersHeadEquipment = unitHeadsConst.reduce((acc, cur) => {
+        const item = duplicate_cmdr.equipment[cur];
+        if (item !== undefined && item !== null) {
+          acc.push(item);
+        }
+        return acc;
+      }, [] as Array<Item>);
+      //Sort them
+      commandersHeadEquipment.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+      //Strip the current commander of head items, careful to not turn undefined properties into defined ones
+      unitHeadsConst.forEach((key) => {
+        const slot = duplicate_cmdr.equipment[key];
+        if (slot !== undefined) {
+          duplicate_cmdr.equipment[key] = null;
+        }
+      });
+      //Reapply the now sorted head items
+      for (let i = 0; i < commandersHeadEquipment.length; i++) {
+        duplicate_cmdr.equipment[unitHeadsConst[i]] =
+          commandersHeadEquipment[i];
+      }
+    } else if (item_to_remove.type === "armor") {
+      duplicate_cmdr.equipment["body"] = null;
+    } else if (item_to_remove.type === "boots") {
+      duplicate_cmdr.equipment["feet"] = null;
+    } else {
+      //Set Our Item to Null At Its Slot
+      duplicate_cmdr.equipment[itemSlot] = null;
+      //Create an Array of existing misc items
+      const commandersMiscEquipment = unitMiscConst.reduce((acc, cur) => {
+        const item = duplicate_cmdr.equipment[cur];
+        if (item !== undefined && item !== null) {
+          acc.push(item);
+        }
+        return acc;
+      }, [] as Array<Item>);
+      //Sort them
+      commandersMiscEquipment.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+      //Strip the current commander of misc items, careful to not turn undefined properties into defined ones and to turn otherwise defined properities into null
+      unitMiscConst.forEach((key) => {
+        const slot = duplicate_cmdr.equipment[key];
+        if (slot !== undefined) {
+          duplicate_cmdr.equipment[key] = null;
+        }
+      });
+      //Reapply the now sorted misc items
+      for (let i = 0; i < commandersMiscEquipment.length; i++) {
+        duplicate_cmdr.equipment[unitMiscConst[i]] = commandersMiscEquipment[i];
+      }
+    }
+    return duplicate_cmdr;
+    function calcHandItemTypeValue(item: Item) {
+      let value = 0;
+      switch (item.type) {
+        case "1-h wpn": {
+          value = 2;
+        }
+        case "2-h wpn": {
+          value = 3;
+        }
+        case "shield": {
+          value = 1;
+        }
+      }
+      return value;
+    }
   }
   return (
     <li className="flex flex-row w-full">
@@ -297,7 +527,11 @@ function CommanderDisplay({
                 backgroundSize: "contain",
               }}
               onClick={(e) => {
-                //TODO
+                handleUpdateCommander(
+                  addItemToCommander(createCommanderCopy(cmdr), chosenItem),
+                  cmdrIdx,
+                  nationIdx
+                );
               }}
             ></button>
           ) : undefined}
@@ -342,8 +576,8 @@ function CommanderDisplay({
         </div>
         <div className="even:bg-slate-700 odd:bg-neutral-700 px-2 rounded-lg">
           <h2 className="font-bold flex-1">{cmdr.name}</h2>
-          {displayEquipment(cmdr)}
           {displayAvailableSlots(cmdr, chosenItem)}
+          {displayEquipment(cmdr)}
           {displaySquads(cmdr)}
         </div>
       </div>

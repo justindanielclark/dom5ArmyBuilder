@@ -7,7 +7,7 @@ import itemsTsv from "./gamedata/BaseI.tsv";
 //@ts-ignore//
 import nationsTsv from "./gamedata/nations.tsv";
 
-import { useReducer, useMemo } from "react";
+import { useReducer, useMemo, useState } from "react";
 import { Nation, NationIndex, NationsByEra } from "./types/Nation";
 import { Commander, Unit } from "./types/Unit";
 import { Item, ItemTypeConst } from "./types/Item";
@@ -128,7 +128,6 @@ function appStateReducer(state: AppState, action: ReducerAction): AppState {
     }
   }
 }
-
 function createInitialState(): AppState {
   return {
     chosenItem: null,
@@ -157,6 +156,13 @@ function createInitialState(): AppState {
     ],
   };
 }
+
+type Displaying = {
+  Nations: boolean;
+  Research: boolean;
+  UnitSearch: boolean;
+  ItemSearch: boolean;
+};
 
 function App() {
   const nations = useMemo<NationsByEra>(() => {
@@ -193,13 +199,82 @@ function App() {
   }, []);
   const units = useMemo<Array<Unit>>(() => {
     const returnable = (unitsTsv as Array<Unit>)
-      .map((unit) => unit)
+      .map((unit) => {
+        return {
+          id: unit.id,
+          aquatic: unit.aquatic,
+          name: unit.name,
+          leader: unit.leader,
+          holy: unit.holy,
+          crownonly: unit.crownonly,
+          undeadleader: unit.undeadleader,
+          magicleader: unit.magicleader,
+          size: unit.size,
+          hp: unit.hp,
+          prot: unit.prot,
+          mr: unit.mr,
+          mor: unit.mor,
+          str: unit.str,
+          att: unit.att,
+          def: unit.def,
+          prec: unit.prec,
+          enc: unit.enc,
+          ap: unit.ap,
+          mapmove: unit.mapmove,
+          startage: unit.startage,
+          maxage: unit.maxage,
+          F: unit.F,
+          A: unit.A,
+          W: unit.W,
+          E: unit.E,
+          S: unit.S,
+          D: unit.D,
+          N: unit.N,
+          B: unit.B,
+          H: unit.H,
+          mask1: unit.mask1,
+          mask2: unit.mask2,
+          mask3: unit.mask3,
+          mask4: unit.mask4,
+          mask5: unit.mask5,
+          mask6: unit.mask6,
+          rand1: unit.rand1,
+          rand2: unit.rand2,
+          rand3: unit.rand3,
+          rand4: unit.rand4,
+          rand5: unit.rand5,
+          rand6: unit.rand6,
+          nbr1: unit.nbr1,
+          nbr2: unit.nbr2,
+          nbr3: unit.nbr3,
+          nbr4: unit.nbr4,
+          nbr5: unit.nbr5,
+          nbr6: unit.nbr6,
+          link1: unit.link1,
+          link2: unit.link2,
+          link3: unit.link3,
+          link4: unit.link4,
+          link5: unit.link5,
+          link6: unit.link6,
+          hand: unit.hand,
+          head: unit.head,
+          body: unit.body,
+          foot: unit.foot,
+          misc: unit.misc,
+        };
+      })
       .sort((a, b) => a.name.localeCompare(b.name));
     return returnable;
   }, []);
   const items = useMemo<Array<Item>>(() => {
     const returnable = (itemsTsv as Array<Item>)
-      .map((item) => item)
+      .map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          type: item.type,
+        };
+      })
       .sort((a, b) => {
         const aTypeIndex = ItemTypeConst.indexOf(a.type);
         const bTypeIndex = ItemTypeConst.indexOf(b.type);
@@ -211,6 +286,22 @@ function App() {
     return returnable;
   }, []);
   const [state, dispatch] = useReducer(appStateReducer, createInitialState());
+  const [displaying, setDisplaying] = useState<Displaying>({
+    Nations: false,
+    Research: false,
+    UnitSearch: false,
+    ItemSearch: false,
+  });
+
+  function toggleDisplay(displayKey: keyof Displaying): void {
+    setDisplaying((x) => {
+      const newDisplaying: Displaying = {
+        ...x,
+        [displayKey]: !x[displayKey],
+      };
+      return newDisplaying;
+    });
+  }
 
   function addNation(nation: Nation | null, nationIndex: NationIndex): void {
     dispatch({
@@ -327,29 +418,39 @@ function App() {
   }
 
   return (
-    <main className="flex flex-row h-full">
-      <NationPicker
-        handleCheckboxClick={addNation}
-        parentState={state.nations}
-        nations={nations}
-      />
-      <ResearchPicker
-        handleResearchChange={changeResearch}
-        nations={state.nations}
-        research={state.research}
-      />
-      <div className="flex flex-col">
+    <main className="flex flex-row min-h-screen">
+      <div className="flex flex-col w-96 bg-neutral-800 border-r-2 border-neutral-900 min-h-full overflow-y-auto">
+        <NationPicker
+          handleCheckboxClick={addNation}
+          parentState={state.nations}
+          nations={nations}
+          displaying={displaying.Nations}
+          toggleDisplay={toggleDisplay}
+        />
+        <ResearchPicker
+          handleResearchChange={changeResearch}
+          nations={state.nations}
+          research={state.research}
+          displaying={displaying.Research}
+          toggleDisplay={toggleDisplay}
+        />
+
         <UnitPicker
           units={units}
           chosenUnit={state.chosenUnit}
           handleChooseUnit={chooseUnit}
+          displaying={displaying.UnitSearch}
+          toggleDisplay={toggleDisplay}
         />
         <ItemPicker
           items={items}
           chosenItem={state.chosenItem}
           handleChooseItem={chooseItem}
+          displaying={displaying.ItemSearch}
+          toggleDisplay={toggleDisplay}
         />
       </div>
+
       <ArmyBuilder
         armies={state.armies}
         chosenItem={state.chosenItem}
@@ -366,3 +467,4 @@ function App() {
 }
 
 export default App;
+export type { Displaying };

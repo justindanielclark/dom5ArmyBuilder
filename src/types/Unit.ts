@@ -1,76 +1,71 @@
 import { Item } from "./Item";
 
-interface Unit {
-  id: string;
-  name: string;
-  leader: string;
-  holy: string;
-  crownonly: string;
-  undeadleader: string;
-  magicleader: string;
+const trackedUnitAttributes = [
+  "id",
+  "name",
+  "leader",
+  "holy",
+  "crownonly",
+  "undeadleader",
+  "magicleader",
+  "aquatic",
+  "size",
+  "hp",
+  "prot",
+  "mr",
+  "mor",
+  "str",
+  "att",
+  "def",
+  "prec",
+  "enc",
+  "ap",
+  "mapmove",
+  "startage",
+  "maxage",
+  "F",
+  "A",
+  "W",
+  "E",
+  "S",
+  "D",
+  "N",
+  "B",
+  "H",
+  "mask1",
+  "mask2",
+  "mask3",
+  "mask4",
+  "mask5",
+  "mask6",
+  "rand1",
+  "rand2",
+  "rand3",
+  "rand4",
+  "rand5",
+  "rand6",
+  "nbr1",
+  "nbr2",
+  "nbr3",
+  "nbr4",
+  "nbr5",
+  "nbr6",
+  "link1",
+  "link2",
+  "link3",
+  "link4",
+  "link5",
+  "link6",
+  "hand",
+  "head",
+  "body",
+  "foot",
+  "misc",
+] as const;
 
-  //Base Stats
-  size: string;
-  hp: string;
-  prot: string;
-  mr: string;
-  mor: string;
-  str: string;
-  att: string;
-  def: string;
-  prec: string;
-  enc: string;
-  ap: string;
-  mapmove: string;
-  startage: string;
-  maxage: string;
-
-  //Magic
-  F: string;
-  A: string;
-  W: string;
-  E: string;
-  S: string;
-  D: string;
-  N: string;
-  B: string;
-  H: string;
-
-  mask1: string;
-  mask2: string;
-  mask3: string;
-  mask4: string;
-  mask5: string;
-  mask6: string;
-
-  rand1: string;
-  rand2: string;
-  rand3: string;
-  rand4: string;
-  rand5: string;
-  rand6: string;
-
-  nbr1: string;
-  nbr2: string;
-  nbr3: string;
-  nbr4: string;
-  nbr5: string;
-  nbr6: string;
-
-  link1: string;
-  link2: string;
-  link3: string;
-  link4: string;
-  link5: string;
-  link6: string;
-
-  //Parts
-  hand: string;
-  head: string;
-  body: string;
-  foot: string;
-  misc: string;
-}
+type Unit = {
+  [K in typeof trackedUnitAttributes[number]]: string;
+};
 
 interface Units extends Unit {
   quantity: number;
@@ -110,4 +105,4 @@ const allPossibleSlotsConst = [
 
 export default Unit;
 export { unitHandsConst, unitHeadsConst, unitMiscConst, allPossibleSlotsConst };
-export type { Unit, Units, Commander, CommanderEquipment, Squad };
+export type { Unit, Commander, CommanderEquipment, Squad };
