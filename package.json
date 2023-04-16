@@ -7,11 +7,12 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-		"test": "jest"
+    "test": "jest"
   },
   "dependencies": {
     "csv-parser": "^3.0.0",
-    "d3": "^7.8.4",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -21,6 +22,7 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/d3": "^7.4.0",
+    "@types/file-saver": "^2.0.5",
     "@types/jest": "^29.5.0",
     "@types/react": "^18.0.35",
     "@types/react-csv": "^1.1.3",

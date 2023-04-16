@@ -1,4 +1,11 @@
 import "./index.css";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import ArenaMap64 from "./images/fileImgs/ArenaMap64";
+import ArenaMapWinter64 from "./images/fileImgs/ArenaMapWinter64";
+import Banner64 from "./images/fileImgs/Banner64";
+import convertStateToMapData from "./utils/convertStateToMapData";
+import convertStateToModData from "./utils/convertStateToModData";
 
 //@ts-ignore//
 import unitsTsv from "./gamedata/BaseU.tsv";
@@ -12,12 +19,10 @@ import { Nation, NationIndex, NationsByEra } from "./types/Nation";
 import { Commander, Unit } from "./types/Unit";
 import { Item, ItemTypeConst } from "./types/Item";
 import { Research } from "./types/Research";
-
 import NationPicker from "./components/NationPicker";
 import ResearchPicker from "./components/ResearchPicker";
 import UnitPicker from "./components/UnitPicker";
 import ItemPicker from "./components/ItemPicker";
-
 import AppState from "./types/AppState";
 import ReducerAction from "./types/ReducerAction";
 import ArmyBuilder from "./components/ArmyBuilder";
@@ -418,50 +423,83 @@ function App() {
   }
 
   return (
-    <main className="flex flex-row min-h-screen">
-      <div className="flex flex-col w-96 bg-neutral-800 border-r-2 border-neutral-900 min-h-full overflow-y-auto">
-        <NationPicker
-          handleCheckboxClick={addNation}
-          parentState={state.nations}
-          nations={nations}
-          displaying={displaying.Nations}
-          toggleDisplay={toggleDisplay}
-        />
-        <ResearchPicker
-          handleResearchChange={changeResearch}
-          nations={state.nations}
-          research={state.research}
-          displaying={displaying.Research}
-          toggleDisplay={toggleDisplay}
-        />
+    <main className="flex flex-col min-h-screen">
+      <div className="flex flex-row gap-4 items-center justify-end p-1 bg-neutral-900">
+        <button
+          className="bg-green-900 px-1 py-0.5 rounded"
+          onClick={(e) => {
+            const zip = new JSZip();
+            const maps = zip.folder("maps");
+            if (maps) {
+              maps.file("battleTester.map", convertStateToMapData(state));
+              const mapsSub = maps.folder("BattleTester");
+              if (mapsSub) {
+                mapsSub.file("ArenaMap.png", ArenaMap64, { base64: true });
+                mapsSub.file("ArenaMapWinter.png", ArenaMapWinter64, {
+                  base64: true,
+                });
+              }
+            }
+            const mods = zip.folder("mods");
+            if (mods) {
+              mods.file("battleTester.dm", convertStateToModData(state));
+              const modsSub = mods.folder("BattleTester");
+              if (modsSub) {
+                modsSub.file("Banner.tga", Banner64, { base64: true });
+              }
+            }
+            zip.generateAsync({ type: "blob" }).then(function (content) {
+              saveAs(content, "battleTester.zip");
+            });
+          }}
+        >
+          Click to Generate When Complete
+        </button>
+      </div>
+      <div className="flex flex-row flex-1">
+        <div className="flex flex-col w-96 bg-neutral-800 border-r-2 border-neutral-900 min-h-full overflow-y-auto relative">
+          <NationPicker
+            handleCheckboxClick={addNation}
+            parentState={state.nations}
+            nations={nations}
+            displaying={displaying.Nations}
+            toggleDisplay={toggleDisplay}
+          />
+          <ResearchPicker
+            handleResearchChange={changeResearch}
+            nations={state.nations}
+            research={state.research}
+            displaying={displaying.Research}
+            toggleDisplay={toggleDisplay}
+          />
 
-        <UnitPicker
-          units={units}
-          chosenUnit={state.chosenUnit}
-          handleChooseUnit={chooseUnit}
-          displaying={displaying.UnitSearch}
-          toggleDisplay={toggleDisplay}
-        />
-        <ItemPicker
-          items={items}
+          <UnitPicker
+            units={units}
+            chosenUnit={state.chosenUnit}
+            handleChooseUnit={chooseUnit}
+            displaying={displaying.UnitSearch}
+            toggleDisplay={toggleDisplay}
+          />
+          <ItemPicker
+            items={items}
+            chosenItem={state.chosenItem}
+            handleChooseItem={chooseItem}
+            displaying={displaying.ItemSearch}
+            toggleDisplay={toggleDisplay}
+          />
+        </div>
+        <ArmyBuilder
+          armies={state.armies}
           chosenItem={state.chosenItem}
-          handleChooseItem={chooseItem}
-          displaying={displaying.ItemSearch}
-          toggleDisplay={toggleDisplay}
+          chosenUnit={state.chosenUnit}
+          nations={state.nations}
+          handleAddCommander={addCommanderToArmy}
+          handleRemoveCommander={removeCommanderFromArmy}
+          handleShiftCommanderPos={shiftCommanderPosition}
+          handleCopyCommander={copyCommander}
+          handleUpdateCommander={updateCommander}
         />
       </div>
-
-      <ArmyBuilder
-        armies={state.armies}
-        chosenItem={state.chosenItem}
-        chosenUnit={state.chosenUnit}
-        nations={state.nations}
-        handleAddCommander={addCommanderToArmy}
-        handleRemoveCommander={removeCommanderFromArmy}
-        handleShiftCommanderPos={shiftCommanderPosition}
-        handleCopyCommander={copyCommander}
-        handleUpdateCommander={updateCommander}
-      />
     </main>
   );
 }

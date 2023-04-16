@@ -61,7 +61,7 @@ function ArmyBuilder({
                 {armies[idx].length > 0 ? (
                   <div className="relative">
                     <img className="w-6 h-6 peer" src={listSVG} />
-                    <div className="absolute peer-hover:block hidden z-50 bg-slate-800 p-2 border-2 border-white rounded-lg text-sm w-48">
+                    <div className="absolute peer-hover:block hidden z-50 bg-slate-800 p-2 border-2 border-white rounded-lg text-sm w-fit">
                       {createArmySummary(armies[idx])}
                     </div>
                   </div>
@@ -178,9 +178,11 @@ function createArmySummary(army: Array<Commander>): JSX.Element {
       <h1 className="font-bold underline">Commanders:</h1>
       <ul>
         {CommanderData.map((data, idx) => (
-          <li key={idx} className="ml-2">
+          <li key={idx} className="whitespace-nowrap w-full flex flex-row">
             <span className="inline-block mr-2 font-bold">{data.name}:</span>
-            {data.quantity}
+            <span className="inline-block flex-1 text-right">
+              {data.quantity}
+            </span>
           </li>
         ))}
       </ul>
@@ -189,11 +191,13 @@ function createArmySummary(army: Array<Commander>): JSX.Element {
           <h1 className="font-bold underline">Units:</h1>
           <ul>
             {UnitData.map((data, idx) => (
-              <li key={idx} className="ml-2">
+              <li key={idx} className="whitespace-nowrap w-full flex flex-row">
                 <span className="inline-block mr-2 font-bold">
                   {data.name}:
                 </span>
-                {data.quantity}
+                <span className="inline-block flex-1 text-right">
+                  {data.quantity}
+                </span>
               </li>
             ))}
           </ul>

@@ -6,4 +6,5 @@ import dsv from "@rollup/plugin-dsv";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), dsv()],
+  assetsInclude: ["**/*.tga"],
 });
