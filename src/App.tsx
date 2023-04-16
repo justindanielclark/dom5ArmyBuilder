@@ -297,6 +297,10 @@ function App() {
     UnitSearch: false,
     ItemSearch: false,
   });
+  const [showingTextDump, setShowingTextDump] = useState({
+    mod: false,
+    map: false,
+  });
 
   function toggleDisplay(displayKey: keyof Displaying): void {
     setDisplaying((x) => {
@@ -424,14 +428,89 @@ function App() {
 
   return (
     <main className="flex flex-col min-h-screen">
-      <div className="flex flex-row gap-4 items-center justify-end p-1 bg-neutral-900">
+      <div className="flex flex-row gap-4 items-center justify-end p-1 bg-neutral-900 relative">
+        {showingTextDump.mod || showingTextDump.map ? (
+          <div className="absolute top-10 right-0 text-black text-xs">
+            {showingTextDump.map ? (
+              <div className="flex flex-col">
+                <button
+                  className="bg-red-900"
+                  onClick={(e) => {
+                    setShowingTextDump((x) => {
+                      return {
+                        ...x,
+                        map: !x.map,
+                      };
+                    });
+                  }}
+                >
+                  X
+                </button>
+                <textarea
+                  readOnly={true}
+                  value={convertStateToMapData(state)}
+                ></textarea>
+              </div>
+            ) : undefined}
+
+            {showingTextDump.mod ? (
+              <div className="flex flex-col">
+                <button
+                  className="bg-red-900"
+                  onClick={(e) => {
+                    setShowingTextDump((x) => {
+                      return {
+                        ...x,
+                        mod: !x.mod,
+                      };
+                    });
+                  }}
+                >
+                  X
+                </button>
+                <textarea
+                  readOnly={true}
+                  value={convertStateToModData(state)}
+                ></textarea>
+              </div>
+            ) : undefined}
+          </div>
+        ) : undefined}
+        <button
+          className="bg-green-900 px-1 py-0.5 rounded"
+          onClick={(e) => {
+            setShowingTextDump((x) => {
+              return {
+                ...x,
+                mod: !x.mod,
+              };
+            });
+          }}
+        >
+          Mod Text
+        </button>
+        <button
+          className="bg-green-900 px-1 py-0.5 rounded"
+          onClick={(e) => {
+            setShowingTextDump((x) => {
+              return {
+                ...x,
+                map: !x.map,
+              };
+            });
+          }}
+        >
+          Map Text
+        </button>
         <button
           className="bg-green-900 px-1 py-0.5 rounded"
           onClick={(e) => {
             const zip = new JSZip();
             const maps = zip.folder("maps");
             if (maps) {
-              maps.file("battleTester.map", convertStateToMapData(state));
+              maps.file("battleTester.map", convertStateToMapData(state), {
+                binary: false,
+              });
               const mapsSub = maps.folder("BattleTester");
               if (mapsSub) {
                 mapsSub.file("ArenaMap.png", ArenaMap64, { base64: true });
@@ -442,7 +521,9 @@ function App() {
             }
             const mods = zip.folder("mods");
             if (mods) {
-              mods.file("battleTester.dm", convertStateToModData(state));
+              mods.file("battleTester.dm", convertStateToModData(state), {
+                binary: false,
+              });
               const modsSub = mods.folder("BattleTester");
               if (modsSub) {
                 modsSub.file("Banner.tga", Banner64, { base64: true });
