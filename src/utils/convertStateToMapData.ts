@@ -5092,7 +5092,7 @@ export default function convertStateToMapData(state: AppState) {
     "#pb 377 1082 10 17",
     "#pb 377 1083 7 17",
   ];
-  return [...preText, ...arr, ...postText].join("\n");
+  return [...preText, ...arr, ...postText].join("\r\n");
 
   function prepLand() {
     arr.push("#lab");

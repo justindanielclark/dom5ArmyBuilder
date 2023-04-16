@@ -126,7 +126,7 @@ export default function convertStateToModData(appState: AppState): string {
     }
   });
 
-  return [...pretext, ...arr].join("\n");
+  return [...pretext, ...arr].join("\r\n");
 
   function createSharedSpell(splNumber: string): void {
     arr.push(`#selectspell ${splNumber}`);
