@@ -3,10 +3,6 @@ import spellsTSV from "../gamedata/spells.tsv";
 import Spell from "../types/Spell";
 import AppState from "../types/AppState";
 
-// #selectspell 528
-// #researchlevel 0
-// #notfornation 17
-// #end
 const separator = "\n";
 
 export default function convertStateToModData(appState: AppState): string {
@@ -72,10 +68,10 @@ export default function convertStateToModData(appState: AppState): string {
         }
         break;
       }
-      //Enchantment
+      //Construction
       case "3": {
-        const nation0Req = researchlevel <= research[0].Enchantment;
-        const nation1Req = researchlevel <= research[1].Enchantment;
+        const nation0Req = researchlevel <= research[0].Construction;
+        const nation1Req = researchlevel <= research[1].Construction;
         if (nation0Req && nation1Req) {
           createSharedSpell(spell.id);
         } else if (nation0Req) {
@@ -85,10 +81,10 @@ export default function convertStateToModData(appState: AppState): string {
         }
         break;
       }
-      //Construction
+      //Enchantment
       case "4": {
-        const nation0Req = researchlevel <= research[0].Construction;
-        const nation1Req = researchlevel <= research[1].Construction;
+        const nation0Req = researchlevel <= research[0].Enchantment;
+        const nation1Req = researchlevel <= research[1].Enchantment;
         if (nation0Req && nation1Req) {
           createSharedSpell(spell.id);
         } else if (nation0Req) {
