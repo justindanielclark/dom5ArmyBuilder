@@ -1,5 +1,8 @@
 // @ts-ignore //
 import spellsTSV from "../gamedata/spells.tsv";
+// @ts-ignore //
+import ItemsTSV from "../gamedata/BaseI.tsv";
+import { Item } from "../types/Item";
 import Spell from "../types/Spell";
 import AppState from "../types/AppState";
 
@@ -14,6 +17,19 @@ export default function convertStateToModData(appState: AppState): string {
     '#icon "BattleTester/Banner.tga"',
     "#version 1",
     "",
+    "#newsite 1500",
+    '#name "Matriarchs Blessing"',
+    "#gems 0 10",
+    "#gems 1 10",
+    "#gems 2 10",
+    "#gems 3 10",
+    "#gems 4 10",
+    "#gems 5 10",
+    "#gems 6 10",
+    "#gems 7 10",
+    "#gold 500",
+    "#supply 3000",
+    "#end",
   ];
   const nation0ID = nations[0] ? nations[0].id : "-1";
   const nation1ID = nations[1] ? nations[1].id : "-1";
@@ -120,6 +136,14 @@ export default function convertStateToModData(appState: AppState): string {
         }
         break;
       }
+    }
+  });
+  (ItemsTSV as Array<Item>).forEach((item) => {
+    //id 1 causes mod to not load any item modifications
+    if (item.id !== "1") {
+      arr.push(`#selectitem ${item.id}`);
+      arr.push("#constlevel 0");
+      arr.push("#end");
     }
   });
   arr.push(separator);

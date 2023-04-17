@@ -77,11 +77,9 @@ export default function convertStateToMapData(state: AppState) {
 
     arr.push(nations[0].uwStart === "1" ? "#land 3" : "#setland 3");
     arr.push(`#owner ${nations[0].id}`);
-    prepLandWithSites(3);
 
     arr.push(nations[1].uwStart === "1" ? "#land 4" : "#setland 4");
     arr.push(`#owner ${nations[1].id}`);
-    prepLandWithSites(4);
 
     arr.push("#land 5");
     arr.push(`#owner ${nations[0].id}`);
@@ -127,11 +125,9 @@ export default function convertStateToMapData(state: AppState) {
 
     arr.push(nations[0].uwStart === "0" ? "#land 15" : "#setland 15");
     arr.push(`#owner ${nations[0].id}`);
-    prepLandWithSites(15);
 
     arr.push(nations[1].uwStart === "0" ? "#land 16" : "#setland 16");
     arr.push(`#owner ${nations[1].id}`);
-    prepLandWithSites(16);
 
     arr.push("#land 17");
     arr.push(`#owner ${nations[0].id}`);
@@ -5105,16 +5101,7 @@ export default function convertStateToMapData(state: AppState) {
   function prepLandWithSites(landNum: number) {
     const UWLand = [11, 12, 13, 14, 15, 16, 17, 18];
     prepLand();
-    arr.push("#knownfeature 338");
-    arr.push("#knownfeature 402");
-    arr.push(
-      UWLand.includes(landNum) ? "#knownfeature 463" : "#knownfeature 466"
-    );
-    arr.push("#knownfeature 965");
-    arr.push("#knownfeature 620");
-    arr.push("#knownfeature 682");
-    arr.push("#knownfeature 785");
-    arr.push("#knownfeature 866");
+    arr.push('#knownfeature "Matriarchs Blessing"');
   }
   function generateCommanderEquipment(cmdr: Commander): void {
     arr.push(`#commander ${cmdr.id}`);
