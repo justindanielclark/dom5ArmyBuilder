@@ -1,8 +1,8 @@
 import "./index.css";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import ArenaMap64 from "./images/fileImgs/ArenaMap64";
-import ArenaMapWinter64 from "./images/fileImgs/ArenaMapWinter64";
+import ArenaMap64 from "./images/fileImgs/ArenaMap64tga";
+import ArenaMapWinter64 from "./images/fileImgs/ArenaMapWinter64tga";
 import Banner64 from "./images/fileImgs/Banner64";
 import convertStateToMapData from "./utils/convertStateToMapData";
 import convertStateToModData from "./utils/convertStateToModData";
@@ -513,8 +513,8 @@ function App() {
               });
               const mapsSub = maps.folder("BattleTester");
               if (mapsSub) {
-                mapsSub.file("ArenaMap.png", ArenaMap64, { base64: true });
-                mapsSub.file("ArenaMapWinter.png", ArenaMapWinter64, {
+                mapsSub.file("ArenaMap.tga", ArenaMap64, { base64: true });
+                mapsSub.file("ArenaMapWinter.tga", ArenaMapWinter64, {
                   base64: true,
                 });
               }
