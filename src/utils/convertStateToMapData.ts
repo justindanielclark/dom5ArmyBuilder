@@ -1,6 +1,8 @@
 import { Commander, CommanderEquipment } from "../types/Unit";
 import AppState from "../types/AppState";
 
+const separator = "\n";
+
 export default function convertStateToMapData(state: AppState) {
   const arr = [];
   const { nations, armies, research } = state;
@@ -139,6 +141,7 @@ export default function convertStateToMapData(state: AppState) {
     arr.push(`#owner ${nations[1].id}`);
     prepLandWithSites(18);
   }
+  arr.push(separator);
   const preText = [
     "-- ",
     "-- Map file for Dominions 5",
@@ -5092,7 +5095,7 @@ export default function convertStateToMapData(state: AppState) {
     "#pb 377 1082 10 17",
     "#pb 377 1083 7 17",
   ];
-  return [...preText, ...arr, ...postText].join("\r\n");
+  return [...preText, ...arr, ...postText].join(separator);
 
   function prepLand() {
     arr.push("#lab");

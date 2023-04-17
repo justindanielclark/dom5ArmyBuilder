@@ -7,6 +7,7 @@ import AppState from "../types/AppState";
 // #researchlevel 0
 // #notfornation 17
 // #end
+const separator = "\n";
 
 export default function convertStateToModData(appState: AppState): string {
   const { nations, research } = appState;
@@ -125,8 +126,9 @@ export default function convertStateToModData(appState: AppState): string {
       }
     }
   });
+  arr.push(separator);
 
-  return [...pretext, ...arr].join("\r\n");
+  return [...pretext, ...arr].join(separator);
 
   function createSharedSpell(splNumber: string): void {
     arr.push(`#selectspell ${splNumber}`);
