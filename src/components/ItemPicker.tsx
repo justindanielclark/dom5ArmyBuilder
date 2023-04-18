@@ -79,20 +79,26 @@ function ItemPicker({
                   )
                   .map((item) => (
                     <li key={item.id} className="flex flex-row">
-                      <input
-                        type="checkbox"
-                        className="mr-2"
-                        checked={
-                          chosenItem && chosenItem.id === item.id ? true : false
-                        }
-                        onChange={(e) => {
-                          e.target.checked
-                            ? handleChooseItem(item)
-                            : handleChooseItem(null);
-                        }}
-                      />
-                      <span className="inline-block flex-1">{item.name}</span>
-                      <span className="inline-block">{`(${item.type})`}</span>
+                      <label htmlFor={item.id}>
+                        <input
+                          id={item.id}
+                          type="checkbox"
+                          name={item.id}
+                          className="mr-2"
+                          checked={
+                            chosenItem && chosenItem.id === item.id
+                              ? true
+                              : false
+                          }
+                          onChange={(e) => {
+                            e.target.checked
+                              ? handleChooseItem(item)
+                              : handleChooseItem(null);
+                          }}
+                        />
+                        <span className="inline-block flex-1">{item.name}</span>
+                        <span className="inline-block">{`(${item.type})`}</span>
+                      </label>
                     </li>
                   ))}
               </ul>

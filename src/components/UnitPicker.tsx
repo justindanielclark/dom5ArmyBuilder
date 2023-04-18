@@ -94,23 +94,28 @@ function UnitPicker({
                     .map((unit) => {
                       return (
                         <li key={unit.id} className="flex flex-row w-full">
-                          <input
-                            checked={
-                              chosenUnit && chosenUnit.id === unit.id
-                                ? true
-                                : false
-                            }
-                            className="mr-2"
-                            type="checkbox"
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                handleChooseUnit(unit);
-                              } else {
-                                handleChooseUnit(null);
+                          <label htmlFor={unit.id} className="flex-1">
+                            <input
+                              checked={
+                                chosenUnit && chosenUnit.id === unit.id
+                                  ? true
+                                  : false
                               }
-                            }}
-                          />
-                          <span className="inline flex-1">{unit.name}</span>
+                              id={unit.id}
+                              name={unit.id}
+                              className="mr-2"
+                              type="checkbox"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  handleChooseUnit(unit);
+                                } else {
+                                  handleChooseUnit(null);
+                                }
+                              }}
+                            />
+                            <span>{unit.name}</span>
+                          </label>
+
                           <div className="relative">
                             <img className="h-6 w-6 peer" src={eye} />
                             <div className="hidden hover:flex absolute z-50 rounded-lg peer-hover:flex flex-col bg-slate-800 border-white border-2 text-xs gap-2 -translate-x-full left-5 -translate-y-full -top-1">
