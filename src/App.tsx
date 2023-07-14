@@ -6,7 +6,7 @@ import ArenaMapWinter64 from "./images/fileImgs/ArenaMapWinter64tga";
 import Banner64 from "./images/fileImgs/Banner64";
 import convertStateToMapData from "./utils/convertStateToMapData";
 import convertStateToModData from "./utils/convertStateToModData";
-import { inject } from "@vercel/analytics/*";
+import { Analytics } from "@vercel/analytics/react";
 
 //@ts-ignore//
 import unitsTsv from "./gamedata/BaseU.tsv";
@@ -171,8 +171,6 @@ type Displaying = {
 };
 
 function App() {
-  //VERCEL TRACKING
-  inject();
   //Main
   const nations = useMemo<NationsByEra>(() => {
     const returnable = (nationsTsv as Array<Nation>).reduce(
@@ -432,6 +430,7 @@ function App() {
 
   return (
     <main className="flex flex-col min-h-screen">
+      <Analytics />
       <div className="flex flex-row gap-4 items-center justify-end p-1 bg-neutral-900 relative">
         {showingTextDump.mod || showingTextDump.map ? (
           <div className="absolute top-10 right-0 text-black text-xs">
