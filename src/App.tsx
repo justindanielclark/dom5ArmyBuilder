@@ -6,6 +6,7 @@ import ArenaMapWinter64 from "./images/fileImgs/ArenaMapWinter64tga";
 import Banner64 from "./images/fileImgs/Banner64";
 import convertStateToMapData from "./utils/convertStateToMapData";
 import convertStateToModData from "./utils/convertStateToModData";
+import { inject } from "@vercel/analytics/*";
 
 //@ts-ignore//
 import unitsTsv from "./gamedata/BaseU.tsv";
@@ -170,6 +171,9 @@ type Displaying = {
 };
 
 function App() {
+  //VERCEL TRACKING
+  inject();
+  //Main
   const nations = useMemo<NationsByEra>(() => {
     const returnable = (nationsTsv as Array<Nation>).reduce(
       (acc, cur) => {

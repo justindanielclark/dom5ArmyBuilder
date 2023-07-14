@@ -28,7 +28,7 @@ export default function convertStateToModData(appState: AppState): string {
     "#gems 6 10",
     "#gems 7 10",
     "#gold 500",
-    "#supply 3000",
+    "#supply 500",
     "#end",
   ];
   const nation0ID = nations[0] ? nations[0].id : "-1";
