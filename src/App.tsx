@@ -299,10 +299,6 @@ function App() {
     UnitSearch: false,
     ItemSearch: false,
   });
-  const [showingTextDump, setShowingTextDump] = useState({
-    mod: false,
-    map: false,
-  });
 
   function toggleDisplay(displayKey: keyof Displaying): void {
     setDisplaying((x) => {
@@ -432,79 +428,13 @@ function App() {
     <main className="flex flex-col min-h-screen">
       <Analytics />
       <div className="flex flex-row gap-4 items-center justify-end p-1 bg-neutral-900 relative">
-        {showingTextDump.mod || showingTextDump.map ? (
-          <div className="absolute top-10 right-0 text-black text-xs">
-            {showingTextDump.map ? (
-              <div className="flex flex-col">
-                <button
-                  className="bg-red-900"
-                  onClick={(e) => {
-                    setShowingTextDump((x) => {
-                      return {
-                        ...x,
-                        map: !x.map,
-                      };
-                    });
-                  }}
-                >
-                  X
-                </button>
-                <textarea
-                  readOnly={true}
-                  value={convertStateToMapData(state)}
-                ></textarea>
-              </div>
-            ) : undefined}
-
-            {showingTextDump.mod ? (
-              <div className="flex flex-col">
-                <button
-                  className="bg-red-900"
-                  onClick={(e) => {
-                    setShowingTextDump((x) => {
-                      return {
-                        ...x,
-                        mod: !x.mod,
-                      };
-                    });
-                  }}
-                >
-                  X
-                </button>
-                <textarea
-                  readOnly={true}
-                  value={convertStateToModData(state)}
-                ></textarea>
-              </div>
-            ) : undefined}
-          </div>
-        ) : undefined}
-        <button
+        <a
           className="bg-green-900 px-1 py-0.5 rounded"
-          onClick={(e) => {
-            setShowingTextDump((x) => {
-              return {
-                ...x,
-                mod: !x.mod,
-              };
-            });
-          }}
+          href="https://www.youtube.com/watch?v=Ttzn2uYt0KE&t=15s"
+          target="_blank"
         >
-          Mod Text
-        </button>
-        <button
-          className="bg-green-900 px-1 py-0.5 rounded"
-          onClick={(e) => {
-            setShowingTextDump((x) => {
-              return {
-                ...x,
-                map: !x.map,
-              };
-            });
-          }}
-        >
-          Map Text
-        </button>
+          View Tutorial
+        </a>
         <button
           className="bg-green-900 px-1 py-0.5 rounded"
           onClick={(e) => {
